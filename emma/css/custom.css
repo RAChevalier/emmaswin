@@ -24,7 +24,7 @@
 #msgQueue{
     background-color:#2E6099;
     margin-top: 52px;
-    height:93vh;
+    height:92vh;
     border: 1px solid;
 }
 
@@ -40,15 +40,16 @@
     margin-top: 52px;
     padding:5px;
     background-color:white;
-    height:93vh;
+    height:92vh;
     border: 1px solid;
+	overflow: scroll;
 }
 
 #messageDisplay{
     margin-top: 52px;
     padding: 0;
     background-color:black;
-    height:93vh;
+    height:92vh;
     border: 1px solid;
     overflow: scroll;
 }
@@ -65,4 +66,15 @@
 
 .affix + .container-fluid {
     padding-top: 70px;
+}
+
+#result, #map {
+	height: 300px;
+	overflow: scroll;
+}
+
+/* source: http://stackoverflow.com/questions/15668583/force-table-column-widths-to-always-be-fixed-regardless-of-contents */
+#resulttable {
+	width: 100%;
+	table-layout: fixed;
 }

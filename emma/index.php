@@ -30,6 +30,7 @@ if ($row =="")
 else
 {
 	echo "correct login ";
+	$_SESSION["userid"] = $row["userid"];
 	$_SESSION["username"] = $row["name"];
 	echo $_SESSION["username"];
 }

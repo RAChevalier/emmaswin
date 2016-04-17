@@ -18,10 +18,11 @@ session_start();
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 	<script src="https://maps.googleapis.com/maps/api/js?signed_in=true&callback=initMap&libraries=places,geometry" type="text/javascript" async defer></script>
     <script src="display.js" type="text/javascript"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js"></script>
     <link rel="stylesheet" href="css/custom.css">
     <title>Main Interface</title>
 </head>
-<body onload="displayMap()" >
+<body onload="displayResult(); displayMap();" >
 <div class="container-fluid">
 <nav class="navbar navbar-fixed-top navbar-inverse" id="navigationBar"> <!--navigation bar start -->
     <div class="container">
@@ -73,6 +74,7 @@ session_start();
 				<!-- Display user's name in query tab -->
                 <li class="active"><a data-toggle="tab" href="#search">User Query</a></li>
                 <li><a data-toggle="tab" href="#profile">User Profile</a></li>
+                <li><a data-toggle="tab" href="#inprogress">In Progress Queries</a></li>
             </ul>
 
             <div class="tab-content">
@@ -93,15 +95,20 @@ session_start();
 		$user_table="user";
 		
 		// Set up the SQL command to query database
+		$update_query = "UPDATE $query_table SET status = '1' WHERE userid = '" . @$_GET["userid"] .
+		"' AND status = 0";
 		$query = "SELECT Q.queryid, Q.userid, Q.time, Q.content, Q.location, Q.audio, Q.image, U.name FROM
 		$query_table Q INNER JOIN $user_table U ON Q.userid = U.userid WHERE Q.userid = '" . @$_GET["userid"] .
-		"' AND Q.status = 0 ORDER BY Q.time ASC	LIMIT 1;";
+		"' AND Q.status = '1' ORDER BY Q.time ASC LIMIT 1;";
 		
 		// execute the query and store result into the result pointer
+		$update_result = mysqli_query($conn, $update_query);
 		$result = mysqli_query($conn, $query);
 		
 		// checks if the execution was successful
-		if (!$result) {
+		if (!$update_result) {
+			echo "<p>Something is wrong with " . $update_query . "</p>";			
+		} elseif (!$result) {
 			echo "<p>Something is wrong with " . $query . "</p>";
 		} else {
 			
@@ -126,44 +133,58 @@ session_start();
 		$timestamp = strtotime ( @$time );
 		$timestr = date ("g:i:s A", $timestamp);
 		$datestr = date ("l jS F Y", $timestamp);
-
+		$locarray = explode(",", $location);
+		$lat = $locarray[0];
+		$lng = $locarray[1];
 ?>			
-					<!-- Display content of query 
-					source: http://www.w3schools.com/tags/att_textarea_form.asp -->
-                    <div class="well"><?php echo "At " . $timestr . " on " . $datestr . ", " . @$username . " sent the following query:" ?><br /><br />
-					<form method="post" action="query_action.php" id="queryform">
-						<textarea class="form-control" rows="2" id="content" form="queryform" name="newquery"><?php echo @$content ?></textarea>
-						<input type="hidden" name="fixquery" id="fixquery" value="<?php echo @$queryid ?>" />
-						<input type="hidden" name="fuserid" id="fuserid" value="<?php echo @$userid ?>" />
-						<input type="submit" class="btn btn-default" value="Fix this query" />
-					</form><br />
+				<!-- Display content of query 
+				source: http://www.w3schools.com/tags/att_textarea_form.asp -->
+                <div class="well">
+					<table class="table">
+                        <tr>
+                            <td colspan='2'><?php echo "At " . $timestr . " on " . $datestr . ", " . @$username . " sent the following query:" ?></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+							<!-- Display buttons to mark current or all open queries as Done or Open -->
+							<!-- source: http://stackoverflow.com/questions/3632530/html-form-submit-button-confirmation-dialog -->
+                            <td><form method="post" action="query_action.php" id="queryform" onsubmit="return confirm('Are you sure you want to change this query?');">
+								<textarea class="form-control" rows="3" id="content" form="queryform" name="newquery"><?php echo @$content ?></textarea>
+								<input type="hidden" name="fixquery" id="fixquery" value="<?php echo @$queryid ?>" />
+								<input type="hidden" name="fuserid" id="fuserid" value="<?php echo @$userid ?>" /><br />
+								<input type="submit" class="btn btn-default" value="Fix this query" />
+							</form></td>
+                            <td><form method="post" action="query_action.php" onsubmit="return confirm('Are you sure you want to mark this query as Done?');">
+								<input type="hidden" name="querydone" id="querydone" value="<?php echo @$queryid ?>" />
+								<input type="hidden" name="duserid" id="duserid" value="<?php echo @$userid ?>" />
+								<input type="submit" class="btn btn-default" value="Mark this query as Done" />
+							</form><br />
+							<form method="post" action="query_action.php" onsubmit="return confirm('Are you sure you want to mark all In Progress queries as Done?');">
+								<input type="hidden" name="alldone" id="alldone" value="<?php echo @$userid ?>" />
+								<input type="submit" class="btn btn-default" value="Mark all In Progress queries as Done" />
+							</form><br />
+							<form method="post" action="query_action.php" onsubmit="return confirm('Are you sure you want to mark all In Progress queries as Open?');">
+								<input type="hidden" name="allopen" id="allopen" value="<?php echo @$userid ?>" />
+								<input type="submit" class="btn btn-default" value="Mark all In Progress queries as Open" />
+							</form></td>
+                        </tr>
+                        <tr>
+							<!-- Display audio and image files if links are set in database -->
+                            <td><?php if(isset($audio)){echo "<br /><audio controls><source src='" . $audio . "' type='audio/mpeg'>Your browser does not support the audio element.</audio>";} ?></td>
+                            <td><?php if(isset($image)){echo "<a href='" . $image . "' title='Click image to view full size'><img src='" . $image . "' height='100' width='100' /></a>";} ?></td>
+                        </tr>
+                    </table>
+				</div>
 
-					<!-- Display audio and image files if links are set in database -->
-					<?php if(isset($audio)){echo "<br />
-					<audio controls>
-						<source src='" . $audio . "' type='audio/mpeg'>Your browser does not support the audio element.
-					</audio>";} ?>
-					<?php if(isset($image)){echo "<a href='" . $image . "' title='Click image to view full size'><img src='" . $image . "' height='100' width='100' /></a>";} ?>
-					
-					<!-- Display buttons to mark current or all open queries as Done -->
-					<br /><form method="post" action="query_action.php">
-						<input type="hidden" name="querydone" id="querydone" value="<?php echo @$queryid ?>" />
-						<input type="hidden" name="duserid" id="duserid" value="<?php echo @$userid ?>" />
-						<input type="submit" class="btn btn-default" value="Mark this query as Done" />
-					</form><br />
-					<form method="post" action="query_action.php">
-						<input type="hidden" name="alldone" id="alldone" value="<?php echo @$userid ?>" />
-						<input type="submit" class="btn btn-default" value="Mark all open queries as Done" />
-					</form>
-					</div>
-
+				<table id="resulttable"><tr><td>
 					<!-- Display result from Google -->
 					<h4><a href="https://www.google.com.au/search?q=<?php echo @$content ?>" title='Click to view results in Google'>Google's Result</a></h4>
-                    <div id="result" class="well">Google's search results are supposed to go here ...</div>
-					<!-- Display user's location -->
-					<h4><?php echo @$username ?>'s Current Location: <span><a id="location" title='Click to view location in Google Maps' href="https://www.google.com/maps/place/<?php echo @$location ?>"><?php echo @$location ?></a></span></h4>
-                    <div id="map" class="well" style="width: 100%; height: 300px"></div>
+                    <div id="result" class="well" data-content='<?php echo @$content ?>'></div></td><td>
 
+					<!-- Display user's location -->
+					<h4><a id="location" title='Click to view location in Google Maps' href="https://www.google.com/maps/place/<?php echo @$lat . ", " . @$lng ?>"><?php echo @$username ?>'s Location</a></h4>
+                    <div id="map" class="well" data-lat='<?php echo @$lat ?>' data-lng='<?php echo @$lng ?>'></div></td></tr>
+				</table>
 <?php
 	} else {
 		// if there is no GET variable set, agent needs to select a user with an open query from the left queue
@@ -199,10 +220,40 @@ session_start();
                                 <td>Value</td>
                             </tr>
                          </table>
-                        </div>
+                    </div>
                 </div>
-            </div>
 
+			    <div id="inprogress" class="tab-pane fade">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <tr>
+                                <th>Name</th>
+                                <td>Sanjeev</td>
+                            </tr>
+                            <tr>
+                                <th>Age</th>
+                                <td>26</td>
+                            </tr>
+                            <tr>
+                                <th>Address</th>
+                                <td>Melbourne</td>
+                            </tr>
+                            <tr>
+                                <th>Attribute</th>
+                                <td>Value</td>
+                            </tr>
+                            <tr>
+                                <th>Attribute</th>
+                                <td>Value</td>
+                            </tr>
+                            <tr>
+                                <th>Attribute</th>
+                                <td>Value</td>
+                            </tr>
+                         </table>
+                    </div>
+                </div>
+			</div>
         </div>
 
         <div class="col-md-3" id="messageDisplay">
