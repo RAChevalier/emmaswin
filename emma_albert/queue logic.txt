@@ -1,0 +1,17 @@
+For each new query, the database is checked and if any queries for a particular user has a status of 0 (open),
+new query status is set to 0 and answeredby is NULL
+If any queries for particular user has a status of 1 (in progress), new query is set to 1
+If all queries for particular user have a status of 2 (closed), new query is set to 0 and answeredby is NULL
+
+When agent selects user with open queries, status of all open queries is set to 1
+If agent cannot close all queries (e.g. agent is finishing work and a different agent needs to take over),
+agent sets all in progress queries with status 1 to 0
+
+When agent closes one or all open queries, status of all in progress queries is set to 2 and all queries where
+answeredby is NULL is set to agent id.
+
+Queries can move along lifecycle in both directions but only one step at a time.
+E.g. from 0 (open) to 1 (in progress) and back to 0, from 0 to 1 to 2 (closed).
+Once query is closed it cannot be changed open or in progress.
+
+Answer, answeredby and answertime is updated in database when agent responds to query (in right pane).

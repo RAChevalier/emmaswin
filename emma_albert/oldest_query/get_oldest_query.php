@@ -8,22 +8,25 @@
 		
 		// Set up the SQL command to query database
 		$update_query = "UPDATE $query_table SET status = '1' WHERE userid = '" . @$_GET["userid"] . "' AND status = 0";
-		$oldest_query = "SELECT Q.queryid, Q.userid, Q.time, Q.content, Q.location, Q.audio, Q.image, U.name FROM
-		$query_table Q INNER JOIN $user_table U ON Q.userid = U.userid WHERE Q.userid = '" . @$_GET["userid"] .
-		"' AND Q.status = '1' ORDER BY Q.time ASC LIMIT 1;";
+		
+		if (isset($_GET["queryid"])) {
+			$one_query = "SELECT Q.queryid, Q.userid, Q.time, Q.content, Q.location, Q.audio, Q.image, Q.answer, U.name FROM $query_table Q INNER JOIN $user_table U ON Q.userid = U.userid WHERE Q.queryid = '" . @$_GET["queryid"] . "';";
+		} else {
+			$one_query = "SELECT Q.queryid, Q.userid, Q.time, Q.content, Q.location, Q.audio, Q.image, Q.answer, U.name FROM $query_table Q INNER JOIN $user_table U ON Q.userid = U.userid WHERE Q.userid = '" . @$_GET["userid"] . "' AND Q.status = '1' ORDER BY Q.time ASC LIMIT 1;";			
+		}
 		
 		// execute the query and store result into the result pointer
 		$update_result = mysqli_query($conn, $update_query);
-		$oldest_result = mysqli_query($conn, $oldest_query);
+		$one_result = mysqli_query($conn, $one_query);
 		
 		// checks if the execution was successful
 		if (!$update_result) {
 			echo "<p>Something is wrong with " . $update_query . "</p>";			
-		} elseif (!$oldest_result) {
-			echo "<p>Something is wrong with " . $oldest_query . "</p>";
+		} elseif (!$one_result) {
+			echo "<p>Something is wrong with " . $one_query . "</p>";
 		} else {
 			// retrieve details of oldest In Progress query for specific user
-			while ($row = mysqli_fetch_assoc($oldest_result)) {
+			while ($row = mysqli_fetch_assoc($one_result)) {
 				$queryid = $row["queryid"];
 				$userid = $row["userid"];
 				$content = $row["content"];
@@ -32,9 +35,11 @@
 				$time = $row["time"];
 				$audio = $row["audio"];
 				$image = $row["image"];
+				$answer = $row["answer"];
 			}
 			// Frees up the memory, after using the result pointer
-			@mysqli_free_result($result);
+			@mysqli_free_result($update_result);
+			@mysqli_free_result($one_result);
 		}
 		// close the database connection
 		mysqli_close($conn);

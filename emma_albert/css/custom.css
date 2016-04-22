@@ -45,15 +45,6 @@
 	overflow: scroll;
 }
 
-#messageDisplay{
-    margin-top: 52px;
-    padding: 0;
-    background-color:black;
-    height:92vh;
-    border: 1px solid;
-    overflow: scroll;
-}
-
 #replyBox{
     position: relative;
 
@@ -74,7 +65,11 @@
 }
 
 /* source: http://stackoverflow.com/questions/15668583/force-table-column-widths-to-always-be-fixed-regardless-of-contents */
-#resulttable {
+.usertable {
 	width: 100%;
 	table-layout: fixed;
+}
+
+.answerbox {
+	width: 250px;
 }
