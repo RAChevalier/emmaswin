@@ -37,54 +37,65 @@ function displayAll() {
 function displayResult() {
 	// once DOM finished loading, get node with id result and content from data attributes
 	// source: http://www.hashbangcode.com/blog/using-jquery-load-content-page-without-iframe
-	var result = $('#result');
-	var content = result.data('content');
-	result.append("<div id='load'><img src='loading.gif' alt='Loading' /></div>");
-	// load searchgoogle.php script, display only id res, send in content as string
-	result.load('oldest_query/searchgoogle.php #res', {'string': content}, function(response, status, xhr) {
-		if (status == 'error') {
-			var msg = "Sorry but there was an error: ";
-			result.html(msg + xhr.status + " " + xhr.statusText);
-		}
+	$(document).ready(function() {
+		var result = $('#result');
+		var content = result.data('content');
+		result.append("<div id='load'><img src='oldest_query/loading.gif' alt='Loading' /></div>");
+		// load searchgoogle.php script, display only id res, send in content as string
+		result.load('oldest_query/searchgoogle.php #res', {'string': content}, function(response, status, xhr) {
+			if (status == 'error') {
+				var msg = "Sorry but there was an error: ";
+				result.html(msg + xhr.status + " " + xhr.statusText);
+			}
+		});
 	});
 }
 
 function displayMap() {
-	//get node with id location
-	var location = $('#map');
-	var Lat = location.data('lat');
-	var Lng = location.data('lng');
-	// set lat lng values
-	var LatLng = {lat: Lat, lng: Lng};
+		//get node with id location
+		var location = $('#map');
+		var Lat = location.data('lat');
+		var Lng = location.data('lng');
+		// set lat lng values
+		var LatLng = {lat: Lat, lng: Lng};
 
-	// set up map object
-	var mapOptions = {
-		zoom: 14,
-		mapTypeControl: true,
-		scaleControl: true,
-		center: LatLng
-	};
+		// set up map object
+		var mapOptions = {
+			zoom: 14,
+			mapTypeControl: true,
+			scaleControl: true,
+			center: LatLng
+		};
 
-	// create map object
-	var map = new google.maps.Map(document.getElementById("map"), mapOptions);
+		// create map object
+		var map = new google.maps.Map(document.getElementById("map"), mapOptions);
 
-	// set up marker object
-	var marker = new google.maps.Marker({
-		position: LatLng,
-		map: map
+		// set up marker object
+		var marker = new google.maps.Marker({
+			position: LatLng,
+			map: map
+			});
+			
+		if (Lat != null) {
+			// put map object into element map if latitude is defined
+			document.getElementById("map").innerHTML = map;
+		} else {
+			// show error message
+			document.getElementById("map").innerHTML = "No location information available";
+		}
+}
+
+function loadQueue(){
+	setInterval(function(){
+		$.get('getqueue.php', function(data){
+			$('#queryList').html(data);
 		});
-		
-	if (Lat != null) {
-		// put map object into element map if latitude is defined
-		document.getElementById("map").innerHTML = map;
-	} else {
-		// show error message
-		document.getElementById("map").innerHTML = "No location information available";
-	}
+	}, 2000);
 }
 
 function init() {
 	setGetVariables();
+	loadQueue();
 	if ($_GET['userid'] != null) {
 		displayOldest();
 		// source: https://api.jquery.com/load-event/
@@ -93,9 +104,7 @@ function init() {
 		$('body').load('#result', function() {
 			displayResult();
 		});
-		$('body').load('#map', function() {
-			displayMap();
-		});
+		displayMap();
 	} else {
 		document.getElementById("mainDisplay").innerHTML = "<div class='well'>Please select a user with an open query from the left queue.</div>";
 	}
