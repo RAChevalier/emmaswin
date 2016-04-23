@@ -121,10 +121,10 @@ function init() {
 		// dynamically inserted element (#result, #map)
 		// try (), (document), (window), ('body')
 		$('body').ready(function() {
-		$('body').load('#mainDisplay', function() {
-			displayResult();
-			displayMap();
-		});
+			$('body').load('#mainDisplay', function() {
+				displayResult();
+				displayMap();
+			});
 		});
 	} else {
 		document.getElementById("mainDisplay").innerHTML = "<div class='well'>Please select a user with unanswered queries from the left queue.</div>";
