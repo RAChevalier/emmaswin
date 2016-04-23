@@ -73,3 +73,13 @@
 .answerbox {
 	width: 250px;
 }
+
+#assignedQueries {
+	margin-top: 30px;
+}
+
+.queueHeading {
+	color: white;
+	text-align: center;
+	font-size: 120%;
+}
