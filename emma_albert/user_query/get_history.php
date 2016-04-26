@@ -4,7 +4,7 @@
 	// check that the main.php page has a userid GET variable
 	if (isset($_GET["userid"])) {
 		// create table string for In Progress Queries
-		$all_queries_string = "<div class='table-responsive'><table class='table'>";
+		$all_queries_string = "<div class='table-responsive well'><table class='table'>";
 		$all_queries_string .= "<tr><th>Time</th><th>Query</th><th>Location</th><th>Audio</th><th>Image</th><th>Answer</th></tr>";
 		
 		// Upon successful connection
@@ -45,7 +45,7 @@
 					$table_image = "No image";
 				}
 				
-				if ($table_answer == null) {
+				if ($table_answer == null || $table_answer == "") {
 					$table_answer = "<form method='post' action='user_query/query_action.php?userid=" . @$userid . "' id='answerform" . @$queryid . "' onsubmit=\"return confirm('Are you sure you want to submit this answer?');\"><textarea class='form-control answerbox' rows='2' name='answercontent' form='answerform" . @$queryid . "' required='required' ></textarea><input type='hidden' name='answerquery' value='" . @$queryid . "' /><input type='submit' class='btn btn-default' value='Submit' /></form>";
 				}
 				

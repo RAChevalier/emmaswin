@@ -45,52 +45,48 @@ function displayHistory() {
 function displayResult() {
 	// once DOM finished loading, get node with id result and content from data attributes
 	// source: http://www.hashbangcode.com/blog/using-jquery-load-content-page-without-iframe
-	$(document).ready(function() {
-		var result = $('#result');
-		var content = result.data('content');
-		result.append("<div id='load'><img src='user_query/loading.gif' alt='Loading' /></div>");
-		// load searchgoogle.php script, display only id res, send in content as string
-		result.load('user_query/searchgoogle.php #res', {'string': content}, function(response, status, xhr) {
-			if (status == 'error') {
-				var msg = "Sorry but there was an error: ";
-				result.html(msg + xhr.status + " " + xhr.statusText);
-			}
-		});
+	var result = $('#result');
+	var content = result.data('content');
+	result.append("<div id='load'><img src='user_query/loading.gif' alt='Loading' /></div>");
+	// load searchgoogle.php script, display only id res, send in content as string
+	result.load('user_query/searchgoogle.php #res', {'string': content}, function(response, status, xhr) {
+		if (status == 'error') {
+			var msg = "Sorry but there was an error: ";
+			result.html(msg + xhr.status + " " + xhr.statusText);
+		}
 	});
 }
 
 function displayMap() {
-	$(document).ready(function() {
-		//get node with id location
-		var location = $('#map');
-		var Lat = location.data('lat');
-		var Lng = location.data('lng');
-		// set lat lng values
-		var LatLng = {lat: Lat, lng: Lng};
+	//get node with id location
+	var location = $('#map');
+	var Lat = location.data('lat');
+	var Lng = location.data('lng');
+	// set lat lng values
+	var LatLng = {lat: Lat, lng: Lng};
 
-		// set up map object
-		var mapOptions = {
-			zoom: 14,
-			mapTypeControl: true,
-			scaleControl: true,
-			center: LatLng
-		};
-		// create map object
-		var map = new google.maps.Map(document.getElementById("map"), mapOptions);
+	// set up map object
+	var mapOptions = {
+		zoom: 14,
+		mapTypeControl: true,
+		scaleControl: true,
+		center: LatLng
+	};
+	// create map object
+	var map = new google.maps.Map(document.getElementById("map"), mapOptions);
 
-		// set up marker object
-		var marker = new google.maps.Marker({
-			position: LatLng,
-			map: map
-			});		
-		if (Lat != null) {
-			// put map object into element map if latitude is defined
-			document.getElementById("map").innerHTML = map;
-		} else {
-			// show error message
-			document.getElementById("map").innerHTML = "No location information available";
-		}
-	});
+	// set up marker object
+	var marker = new google.maps.Marker({
+		position: LatLng,
+		map: map
+		});		
+	if (Lat != null) {
+		// put map object into element map if latitude is defined
+		document.getElementById("map").innerHTML = map;
+	} else {
+		// show error message
+		document.getElementById("map").innerHTML = "No location information available";
+	}
 }
 
 function loadQueue(){
@@ -109,26 +105,18 @@ function loadAssigned() {
 	}, 2000);
 }
 
-function init() {
+$(window).load(function() {
 	setGetVariables();
 	getAgentName();
 	loadQueue();
 	loadAssigned();
 	if ($_GET['userid'] != null) {
 		displayOne();
-		// source: https://api.jquery.com/load-event/
-		// read somewhere that using .load(...) is same as .on('load', ...), need to attach .load onto static element (body), and then call function on
-		// dynamically inserted element (#result, #map)
-		// try (), (document), (window), ('body')
-		$('body').ready(function() {
-			$('body').load('#mainDisplay', function() {
-				displayResult();
-				displayMap();
-			});
-		});
+		setTimeout(function() {
+			displayResult();
+			displayMap();
+		}, 2000);
 	} else {
 		document.getElementById("mainDisplay").innerHTML = "<div class='well'>Please select a user with unanswered queries from the left queue.</div>";
 	}
-}
-
-window.onload = init;
+});

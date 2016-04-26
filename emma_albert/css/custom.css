@@ -65,7 +65,7 @@
 }
 
 /* source: http://stackoverflow.com/questions/15668583/force-table-column-widths-to-always-be-fixed-regardless-of-contents */
-.usertable {
+.querytable {
 	width: 100%;
 	table-layout: fixed;
 }

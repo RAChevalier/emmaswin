@@ -1,7 +1,7 @@
 <?php
 		
 	// display result from Google
-	$result_string = "<table class='table usertable'><tr><td><h4><a href='https://www.google.com.au/search?q=" . @$content . "' title='Click to view results in Google' target='_blank'>Google's Result</a></h4>";
+	$result_string = "<table class='table querytable'><tr><td><h4><a href='https://www.google.com.au/search?q=" . @$content . "' title='Click to view results in Google' target='_blank'>Google's Result</a></h4>";
 	$result_string .= "<div id='result' class='well' data-content='" . @$content . "'></div></td>";
 
 	// extract lat lng from location
