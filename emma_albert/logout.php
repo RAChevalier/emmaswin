@@ -18,5 +18,6 @@
 	mysqli_close($conn);
 	
 	unset($_SESSION["username"]);
+	unset($_SESSION["userid"]);
 	header("location:index.php");
 ?>
