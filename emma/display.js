@@ -4,6 +4,7 @@ function displayResult() {
 	$(document).ready(function() {
 		var result = $('#result');
 		var content = result.data('content');
+		$('#waiting').append("<div id='load'><img src='loading.gif' alt='Loading' /></div>");
 		// load searchgoogle.php script, display only id res, send in content as string
 		result.load('searchgoogle.php #res', {'string': content}, function(response, status, xhr) {
 			if (status == 'error') {
@@ -38,7 +39,13 @@ function displayMap() {
 		position: LatLng,
 		map: map
 		});
-	// put map object into element map
-	document.getElementById("map").innerHTML = map;
+		
+	if (Lat != null) {
+		// put map object into element map if latitude is defined
+		document.getElementById("map").innerHTML = map;
+	} else {
+		// show error message
+		document.getElementById("map").innerHTML = "No location information available";
+	}
 
 }

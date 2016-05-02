@@ -19,25 +19,40 @@ echo "Connected successfully";
 
 $un=$_POST["email"];
 $pass=$_POST["password"];
-$query = "SELECT * FROM `user` WHERE `email`='$un' and `password`='$pass' ";
-$result =mysqli_query($conn, $query);
+$query = "SELECT * FROM user WHERE email='$un' and password='$pass' ";
 
-$row=mysqli_fetch_array($result);
-if ($row =="")
-{
-	echo "login detail invalid";
-}
-else
-{
-	echo "correct login ";
-	$_SESSION["userid"] = $row["userid"];
-	$_SESSION["username"] = $row["name"];
-	echo $_SESSION["username"];
-}
-}
-if(isset($_SESSION["username"]))
-{
-header("location:main.php");	
+$result = mysqli_query($conn, $query);
+
+	if (!$result) {
+		echo "<p>Something is wrong with " . $query . "</p>";
+		echo mysqli_error($conn);
+	} else {
+			// initialise userFound boolean to false
+			$userFound = false;
+			while ($row = mysqli_fetch_assoc($result)) {
+				if ($_POST["email"] == $row["email"] && $_POST["password"] == $row["password"]) {
+					// if username and password matches row in members table, set boolean to true
+					$userFound = true;
+					$_SESSION["userid"] = $row["userid"];
+					$_SESSION["username"] = $row["name"];
+				}
+			}
+			// Frees up the memory, after using the result pointer
+			@mysqli_free_result($result);
+		}
+		// close the database connection
+		mysqli_close($conn);
+		
+		if ($userFound) {
+			// display welcome message, monthly books, current loans and logout link if user found
+			header("location:main.html");	
+		} else {
+			// display warning, destroy session and show login and register links if user not found
+			echo "<h3>Intruder Alert!</h3>";
+			echo "<p>Your login details are not found.  Please re-check your email address and/or password and try again.</p>";
+			$_SESSION = array();
+			session_destroy();
+		}
 }
 ?>
 
