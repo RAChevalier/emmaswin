@@ -120,3 +120,8 @@ $(window).load(function() {
 		document.getElementById("mainDisplay").innerHTML = "<div class='well'>Please select a user with unanswered queries from the left queue.</div>";
 	}
 });
+
+function releaseRequest()
+{
+    alert('NOTICE:DONT HOLD MORE THAN ONE USER IF NOT NECESSARY:   Please release Some User as you are holding multiple users and another agent has nothing to work on');
+}
