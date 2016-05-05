@@ -48,6 +48,8 @@
 			header("location:../main.html?userid=" . $_GET["userid"]);
 		}
 		@mysqli_free_result($result);
+		
+		include_once 'processmessage.php';
 	}
 
 	mysqli_close($conn);

@@ -2,5 +2,5 @@
 	$host = "localhost";
 	$user = "root";
 	$pwd = "";
-	$sql_db= "b3_17693489_emma";
+	$sql_db= "emma";
 ?>

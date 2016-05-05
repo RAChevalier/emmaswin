@@ -16,6 +16,16 @@
 		//echo "user id = $name, number of queries = $n\n";
 		echo "<a href='main.html?userid=$userid' class='list-group-item'><span class='badge'>$n</span>$name</a>";
 	}
+	
+	$agentid = $_SESSION["userid"];
+	$query1 = mysqli_query($conn, "SELECT `agentid` FROM `releaserequest` WHERE `agentid`=$agentid");
+	$numRows1 = @mysqli_num_rows($query1);
+	if ($numRows1 !=0)
+	{
+		echo '<script type="text/javascript"> releaseRequest(); </script>';
+		$query2 = mysqli_query($conn, "DELETE FROM releaserequest WHERE `agentid` =$agentid");
+	}
+
 	@mysqli_free_result($result);
 	mysqli_close($conn);
 ?>

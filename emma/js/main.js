@@ -128,3 +128,8 @@ $(window).load(function() {
 		document.getElementById("mainDisplay").innerHTML = "<div class='well'>Please select a user with unanswered queries from the left queue.</div>";
 	}
 });
+
+function releaseRequest()
+{
+    alert('Please do not unnecessarily hold multiple users.\nOther agents have no assigned users and request that you release one or more of your assigned users.');
+}
