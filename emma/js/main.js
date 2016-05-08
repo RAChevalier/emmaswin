@@ -112,7 +112,17 @@ function loadAssigned() {
 	}, 2000);
 }
 
+function checkSession(){
+	$.get('checksession.php', function(data) {
+   		if(data=="unauthorised"){
+   			window.alert("Please login");
+ 			window.location.replace('index.php');
+   		}
+	});
+}
+
 $(window).load(function() {
+	checkSession()
 	setGetVariables();
 	getAgentName();
 	loadQueue();
