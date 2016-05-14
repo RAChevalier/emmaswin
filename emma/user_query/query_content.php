@@ -34,11 +34,11 @@
 	$content_string .= "<input type='submit' class='btn btn-default' value='Mark all Assigned queries as Open' /></form>";
 					
 	// displaying audio and image files if links set in database
-	if(isset($audio)) {
-		$content_string .= "<br /><br /><audio controls><source src='" . $audio . "' type='audio/mpeg'>Your browser does not support the audio element.</audio>";
+	if(isset($audio) && $audio != "") {
+		$content_string .= "<br /><br /><audio controls><source src='" . $audio . "' type='audio/mp3'>Your browser does not support the audio element.</audio>";
 	}
 	$content_string .= "</td><td>";
-	if(isset($image)) {
+	if(isset($image) && $image != "") {
 		$content_string .= "<br /><a href='" . $image . "' title='Click image to view full size' target='_blank'><img src='" . $image . "' height='100' width='100' alt='User submitted image'/></a>";
 	}
 	$content_string .= "</td></tr></table></div>";

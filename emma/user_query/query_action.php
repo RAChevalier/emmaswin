@@ -41,6 +41,9 @@
 		$query = "UPDATE $sql_table SET answer = '" . $answercontent . "', answertime = '" . $answertime . "', status = '2' WHERE queryid = '" . $_POST["answerquery"] . "';";
 		// execute the query and store result into the result pointer
 		$result = mysqli_query($conn, $query);
+
+		include_once 'processmessage.php';
+
 		if(!$result) {
 			echo "<p>Something is wrong with " . $query . "</p>";
 		} else {
@@ -48,8 +51,6 @@
 			header("location:../main.html?userid=" . $_GET["userid"]);
 		}
 		@mysqli_free_result($result);
-		
-		include_once 'processmessage.php';
 	}
 
 	mysqli_close($conn);
